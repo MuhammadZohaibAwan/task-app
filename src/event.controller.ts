@@ -2,56 +2,75 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from "@ne
 import { CreateEventsDto } from "./createEvents.dto";
 import { UpdateEventDto } from "./updateEvent.dto";
 import { EventsEntity } from "./events.entity";
+import { MoreThan, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
-
-@Controller()
+@Controller('events') // Added route prefix for all endpoints in this controller
 export class EventsController {
 
-    private events: EventsEntity[] = [];
+    constructor(
+        @InjectRepository(EventsEntity)
+        private readonly repository: Repository<EventsEntity>
+    ) {}
 
     @Get()
-    findAll() { }
+    async findAll() { 
+        return await this.repository.find();
+    }
+
+    // @Get('/practise')
+    // async practice() {
+    //     return await this.repository.find({
+    //         where: {id: MoreThan(2)}
+    //     });
+    // }
+
+   // take:2 //limit 
+   // skip : 2 //off-set
+
     @Get(':id')
-    findOne(@Param('id') id) {
-        const event = this.events.find((event) => {
-            event.id === parseInt(id)
-        })
-        // return event
+    async findOne(@Param('id') id) {
+        return await this.repository.findOne({where: {id}});
     }
+
     @Post()
-    create(@Body() input: CreateEventsDto) {
-
-        const event = {
+    async create(@Body() input: CreateEventsDto) {
+        const newEvent = await this.repository.save({
             ...input,
-            when: new Date(input.when),
-            id: this.events.length + 1
-        };
-        this.events.push(event);
-
-        return event
-    }
-    @Patch()
-    update(@Param('id') id,@Body() input: UpdateEventDto) {
-
-        const index = this.events.findIndex((event) => {
-            event.id === parseInt(id)
+            when: new Date(input.when)
         });
+        return newEvent;
+    }
 
-        this.events[index] = {
-            ...this.events[index],
-            ...input,
-            // when: input.when ? new Date(input.when) : this.events[index]
-            when : new Date()
+    @Patch(':id') // Added parameter decorator for ID
+    async update(@Param('id') id, @Body() input: UpdateEventDto) {
+        const event = await this.repository.findOne({where: {id}});
+        if (event) {
+            const updatedEvent = {
+                ...event,
+                ...input,
+                when: input.when ? new Date(input.when) : event.when 
+            };
+            await this.repository.save(updatedEvent);
+            return updatedEvent;
+        } else {
+            throw new Error('Event not found');
         }
-        return this.events[index]   
+    }
 
-     }
     @Delete(':id')
     @HttpCode(204)
-    remove(@Param('id') id) {
-        this.events = this.events.filter((event) => {
-            event.id !== parseInt(id)
-        })
+    async remove(@Param('id') id) {
+        const event = await this.repository.findOne(id);
+        if (event) {
+            await this.repository.remove(event);
+        } else {
+            // Handle if event with provided ID is not found
+            throw new Error('Event not found');
+        }
     }
-}
 
+
+
+
+}
