@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EventsController } from './event.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsEntity } from './events.entity';
+import { EventsEntity } from './events/events.entity';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -16,9 +16,9 @@ import { EventsEntity } from './events.entity';
     entities: [EventsEntity],
     synchronize: true
   }),
-TypeOrmModule.forFeature([EventsEntity])
+EventsModule
 ],
-  controllers: [AppController,EventsController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
