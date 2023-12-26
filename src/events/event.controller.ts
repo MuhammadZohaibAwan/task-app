@@ -26,6 +26,8 @@ export class EventsController {
     //     });
     // }
 
+ 
+
    // take:2 //limit 
    // skip : 2 //off-set
 

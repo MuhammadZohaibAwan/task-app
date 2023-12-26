@@ -11,6 +11,8 @@ import { EventsController } from './event.controller';
     providers: [],
 })
 export class EventsModule {}
+
+
 //fixed funcationality providing modules 
 //dynamic modules : when you config tools like connection to db :app.module.ts
 // forRoot sets up the database connection (like our base API URL). forFeature 
