@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsEntity } from './events/events.entity';
-import { EventsModule } from './events/events.module';
 import { ConfigModule } from '@nestjs/config';
+import { EventsModule } from './events/events.module';
+import { EventsEntity } from './events/events.entity';
 
 @Module({
   imports: [
