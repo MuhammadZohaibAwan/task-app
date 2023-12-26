@@ -15,7 +15,7 @@ export class EventsController {
 
     @Get()
     async findAll() { 
-        console.log(process.env.DB_HOST)
+        // console.log(process.env.DB_HOST)
         return await this.repository.find();
     }
 
